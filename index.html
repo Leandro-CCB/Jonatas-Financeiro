@@ -335,6 +335,11 @@ body { background:#f4f6f9; font-family:'Segoe UI',sans-serif; margin:0; padding:
           <option value="">-- Selecione um empréstimo --</option>
         </select>
       </div>
+      <div class="col-md-3 form-group d-flex align-items-end">
+        <button class="btn btn-warning w-100" onclick="importarEmprestimo()" title="Importa descrição e valor da parcela do empréstimo selecionado">
+          <i class="fa-solid fa-file-import"></i> Importar Dados
+        </button>
+      </div>
     </div>
     <div class="row hidden" id="despesaFixaExtra">
       <div class="col-md-6 form-group">
@@ -342,6 +347,11 @@ body { background:#f4f6f9; font-family:'Segoe UI',sans-serif; margin:0; padding:
         <select id="lDespesaFixaSelect" class="form-control">
           <option value="">-- Selecione uma despesa fixa --</option>
         </select>
+      </div>
+      <div class="col-md-3 form-group d-flex align-items-end">
+        <button class="btn btn-warning w-100" onclick="importarDespesaFixa()" title="Importa descrição e valor da despesa fixa selecionada">
+          <i class="fa-solid fa-file-import"></i> Importar Dados
+        </button>
       </div>
     </div>
     <button class="btn btn-success" onclick="addLancamento()">
@@ -811,6 +821,39 @@ function toggleCategoriaEmprestimo(){
   document.getElementById('despesaFixaExtra').classList.toggle('hidden',
     tipo === 'entrada' || cat !== 'Despesa Fixa');
   if(cat === 'Despesa Fixa' && tipo === 'saida') atualizarSelectDespesasFixas();
+}
+
+function importarDespesaFixa(){
+  const select = document.getElementById('lDespesaFixaSelect');
+  const dfId = parseInt(select.value);
+  if(!dfId){ alert('Selecione uma despesa fixa antes de importar!'); return; }
+  const df = despesasFixas.find(d => d.id === dfId);
+  if(!df){ alert('Despesa fixa não encontrada!'); return; }
+  document.getElementById('lDesc').value  = df.nome;
+  document.getElementById('lValor').value = df.valor;
+  // Feedback visual temporário no botão
+  const btn = event.currentTarget;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-check"></i> Importado!';
+  btn.classList.replace('btn-warning','btn-success');
+  setTimeout(() => { btn.innerHTML = orig; btn.classList.replace('btn-success','btn-warning'); }, 1500);
+}
+
+function importarEmprestimo(){
+  const select = document.getElementById('lEmprestimoSelect');
+  const empId = parseInt(select.value);
+  if(!empId){ alert('Selecione um empréstimo antes de importar!'); return; }
+  const emp = emprestimos.find(e => e.id === empId);
+  if(!emp){ alert('Empréstimo não encontrado!'); return; }
+  const valorParcela = emp.valorTotal / emp.totalParcelas;
+  document.getElementById('lDesc').value  = `Parcela Empréstimo - ${emp.origem}`;
+  document.getElementById('lValor').value = valorParcela.toFixed(2);
+  // Feedback visual temporário no botão
+  const btn = event.currentTarget;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<i class="fa-solid fa-check"></i> Importado!';
+  btn.classList.replace('btn-warning','btn-success');
+  setTimeout(() => { btn.innerHTML = orig; btn.classList.replace('btn-success','btn-warning'); }, 1500);
 }
 
 function atualizarSelectEmprestimos(){
